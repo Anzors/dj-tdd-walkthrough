@@ -1,0 +1,10 @@
+Enter hash here:
+
+<form action="{% url 'home' %}" method="post">
+    <!--As this is a POST we need a csrf token-->
+    {% csrf_token %} 
+    <!--load the form in p tags -->
+    {{ form.as_p }}
+    <!--Add a submit button-->
+    <input name="submit" type="submit" value="Hash">
+</form>
