@@ -28,10 +28,10 @@ def home(request):
 
 def hash(request, hash):
     # get the hash object from db
-    hashobj = Hash.objects.get(hash=hash)
+    #####   hashobj = Hash.objects.get(hash=hash)
     try:
         hashobj = Hash.objects.get(hash=hash)
-    except Hash.DoesNotExist:
+    except:
         newHash = Hash()    
         newHash.text = "Stop hacking me"
         newHash.hash = "INVALID"
