@@ -1,10 +1,14 @@
+from django.http import response
 from django.test import TestCase
-
-# Create your tests here.
 from django.test import TestCase 
 from selenium import webdriver
 from .forms import HashForm
 import hashlib
+from .models import Hash
+from django.core.exceptions import ValidationError
+
+
+# Create your tests here.
 
 # class FunctionalTestCase(TestCase):
 
@@ -37,7 +41,7 @@ import hashlib
 #         # close the browser
 #         self.browser.quit()
 
-class UnitTestsnctional(TestCase):
+class UnitTestsfunctional(TestCase):
 
     def test_hash_form(self):
         form = HashForm(data={'text':'hello'})
@@ -46,3 +50,36 @@ class UnitTestsnctional(TestCase):
     def test_hash_function_works(self):
         text_hash = hashlib.sha256('hello' .encode('utf-8')).hexdigest()
         self.assertEqual('2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824', text_hash)
+
+    def storeHashOfHello(self):
+        #Create a hash of 'hello'
+        hashobj = Hash()
+        hashobj.text = 'hello'
+        hashobj.hash = '2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824'
+
+        #Store in the database
+        hashobj.save()
+        return hashobj
+
+    def test_hash_object(self):
+        hashobj = self.storeHashOfHello()
+
+        #Retrieve and cheeck the text is correct
+        hashpulled = Hash.objects.get(hash='2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824')
+        self.assertEqual(hashpulled.text, hashobj.text)
+
+    def test_view_of_hash(self):
+        self.storeHashOfHello()
+
+        response = self.client.get('/hash/2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824')
+        self.assertContains(response, 'hello')
+
+    def test_bad_hash(self):
+        def bad_hash():
+            hashobj = Hash()
+            hashobj.hash = '2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824gggToLong'
+            hashobj.full_clean()
+        self.assertRaises(ValidationError, bad_hash)
+
+
+
