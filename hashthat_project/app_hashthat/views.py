@@ -25,6 +25,8 @@ def home(request):
                 newHash.hash = hashText
                 newHash.save()
             return redirect('hash', hash=hashText)  
+    form = HashForm()
+    return render(request, 'hashing/home.html',{'form': form})
 
 def hash(request, hash):
     # get the hash object from db
@@ -32,16 +34,9 @@ def hash(request, hash):
     try:
         hashobj = Hash.objects.get(hash=hash)
     except:
-        newHash = Hash()    
-        newHash.text = "Stop hacking me"
-        newHash.hash = "INVALID"
+        hashobj = Hash()    
+        hashobj.text = "Stop hacking me"
+        hashobj.hash = "INVALID"
     # pass this object to a html file to use
     return render (request, 'hashing/hash.html',{'hash': hashobj}) 
-
-def home(request):
-    return render(request, 'hashing/home.html')
-
-def home(request):
-    form = HashForm()
-    return render(request, 'hashing/home.html',{'form': form})
 
